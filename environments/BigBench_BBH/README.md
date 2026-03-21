@@ -17,8 +17,11 @@
 ## Task
 
 - **Type**: single-turn
-- **Parser**: `ChoiceParser` extracts the final A–Z letter from model completions
-- **Rubric**: single accuracy reward (1.0 correct letter, else 0.0)
+- **Parser**: `ChoiceParser` extracts the selected A–Z option letter from model completions (robust to common prefixes like "I think the answer is B")
+- **Rubric**: single accuracy reward (1.0 correct, else 0.0) supporting:
+  - letter answers (A–Z)
+  - integer answers (first integer found in completion)
+  - free-form answers (normalized exact string match)
 
 ## Quickstart
 
@@ -61,9 +64,11 @@ uv run vf-eval BigBench-BBH \
 
 ## Scoring System
 
-- `ChoiceParser.parse_answer` grabs the final letter from the completion (list/dict/string safe).
-- `Rubric` contains a single reward function: `1.0` if parsed letter equals the expected label, else `0.0`.
-- No partial credit; outputs outside `A–Z` score zero.
+- For multiple-choice items, `ChoiceParser.parse_answer` extracts the chosen option letter from the completion (list/dict/string safe).
+- For non-multiple-choice items (present in BBH), the rubric scores either:
+  - integer exact match (based on the first integer found in the completion), or
+  - normalized exact string match (whitespace collapsed, case-insensitive).
+- No partial credit.
 
 ## Example Usage
 
