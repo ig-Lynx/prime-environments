@@ -196,11 +196,16 @@ def _score_completion(parser: ChoiceParser, completion: Messages, answer: str) -
 def convert(r: dict[str, Any], subset: str) -> dict[str, str] | None:
     t = r.get("multiple_choice_targets")
     if t is not None:
-        opts = [str(x).strip() for x in t if str(x).strip()]
-        if not opts:
-            return None
+        raw_targets = [str(x).strip() for x in t]
         scores = r.get("multiple_choice_scores") or []
-        idx = next((i for i, s in enumerate(scores) if s), None)
+        # Compact targets and scores together so indices stay in sync
+        pairs = [(o, scores[i] if i < len(scores) else 0)
+                 for i, o in enumerate(raw_targets) if o]
+        if not pairs:
+            return None
+        opts, compacted_scores = zip(*pairs)
+        opts = list(opts)
+        idx = next((i for i, s in enumerate(compacted_scores) if s), None)
         if idx is None:
             tgt = {str(x).strip() for x in r.get("targets") or []}
             idx = next((i for i, o in enumerate(opts) if o in tgt), None)
