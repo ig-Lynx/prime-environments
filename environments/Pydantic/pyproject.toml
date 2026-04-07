@@ -1,0 +1,18 @@
+[project]
+name = "Pydantic"
+description = "Minimal scaffold environment for Pydantic-based tasks"
+version = "0.1.0"
+requires-python = ">=3.10"
+readme = "README.md"
+tags = ["pydantic", "json", "scaffold"]
+dependencies = [
+  "verifiers>=0.1.8",
+  "datasets",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build]
+include = ["Pydantic.py"]
